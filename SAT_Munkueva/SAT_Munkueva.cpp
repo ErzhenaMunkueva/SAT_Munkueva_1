@@ -200,13 +200,181 @@ void solveDNF(bool start)
             j--;
         }
     }
+    // Правило 3: проверяем, все ли значения в столбце равны «1»
+    for (int j = 0; j < matrix[0].size(); j++)
+    {
+        bool allOnes = true; // флаг для проверки, что все значения в столбце являются '1'.
+        for (int i = 1; i < matrix.size(); i++)
+        {
+            if (matrix[i][j] == '0')
+            {
+                allOnes = false;
+                break;
+            }
+        }
+        if (allOnes)
+        {
+            root[(int)matrix[0][j]] = '0'; // корень = 0, удаляем столбец
+            for (int i = 0; i < matrix.size(); i++)
+            {
+                matrix[i].erase(matrix[i].begin() + j);
+            }
+            j--;
+
+        }
+    }
 
 
 
+    // Правило 4: проверка, все ли значения в столбце равны "0" или "-"
+    for (int j = 0; j < matrix[0].size(); j++)
+    {
+        bool allZeroes = true;
+        for (int i = 1; i < matrix.size(); i++)
+        {
+            if (matrix[i][j] == '1')
+            {
+                allZeroes = false;
+                break;
+            }
+        }
+        if (allZeroes)
+        {
+            root[(int)matrix[0][j]] = '1'; // корень = 1, удаляем столбец
+            for (int i = 0; i < matrix.size(); i++)
+            {
+                matrix[i].erase(matrix[i].begin() + j);
+            }
+            j--;
+        }
+    }
 
+    // проверяем, все значения одинаковы, кроме одного
+    for (int i = 1; i < matrix.size(); i++)
+    {
+        int ones = 0, zeroes = 0, empty = 0;
+        int index1 = -1, index0 = -1;
+        for (int j = 0; j < matrix[i].size(); j++)
+        {
+            if (matrix[i][j] == '1')
+            {
+                ones++;
+                index1 = j;
+            }
+            else if (matrix[i][j] == '0')
+            {
+                zeroes++;
+                index0 = j;
+            }
+            else
+            {
+                empty++;
+            }
+        }
+        if (ones == 1 && zeroes == matrix[i].size() - empty - 1) //в строке есть ровно один символ '1', ровно один символ '0', и остальные символы  '-'
+        {
+            int root_index = index1;
+            root[(int)matrix[0][root_index]] = '1';
+            i--;
+            if (matrix[0].size() > 0)
+            {
+                for (int v = 1; v < matrix.size(); v++)
+                {
+                    if (matrix[v][root_index] == '0')
+                    {
+                        matrix.erase(matrix.begin() + v); //Если в строке в столбце с индексом root_index находится символ '0', эта строка удаляется из матрицы
+                        v--;
+                    }
+                }
+            }
+            else
+            {
+                break;
+            }
+            for (int k = 0; k < matrix.size(); k++)
+            {
+                matrix[k].erase(matrix[k].begin() + root_index); // удаляется столбец с индексом root_index
+            }
+            continue;
+        }
+        else if (zeroes == 1 && ones == matrix[i].size() - empty - 1)
+        {
+            int root_index = index0;
+            root[(int)matrix[0][root_index]] = '0';
+            i--;
+            if (matrix[0].size() > 0)
+            {
+                for (int v = 1; v < matrix.size(); v++)
+                {
+                    if (matrix[v][root_index] == '1')
+                    {
+                        matrix.erase(matrix.begin() + v);
+                        v--;
+                    }
+                }
+            }
+            for (int k = 0; k < matrix.size(); k++)
+            {
+                matrix[k].erase(matrix[k].begin() + root_index);
+            }
+
+            continue;
+        }
+        if (matrix[0].size() == 0)
+        {
+            break;
+        }
+    }
+
+
+    if (lastmatrix != matrix && matrix.size() != 0) //сранвиваем две матрицы на изменения
+    {
+        lastmatrix = matrix;
+        solveDNF(false);
+        cout << endl;
+    }
+
+    // Правило 5: проверяем, пуста ли матрица
+    if (start) {
+        cout << "root:" << " ";
+        for (int i = 0; i < root.size(); i++)
+        {
+            cout << root[i] << " ";
+        }
+        cout << endl;
+        cout << "***************"
+            << " ";
+        cout << endl;
+        for (auto row : matrix)
+        {
+            for (auto element : row)
+            {
+                cout << element << " ";
+            }
+            cout << endl;
+        }
+    }
+}
 
 int main()
 {
     char adress[] = "dnfRnd_test.pla";
     read_pla_file(adress);
-    int rowLength = matrix[0].size();
+    int rowLength = matrix[0].size(); //длина строки
+    for (int i = 0; i < rowLength; i++)
+        root.push_back('-'); // добавили «-» к корню для каждого элемента в первой строке матрицы
+    vector<char> insert;
+    for (int i = 0; i < rowLength; i++)
+        insert.push_back(i);
+    matrix.insert(matrix.begin() + 0, insert); //вставляем номера строк матрицы
+    for (auto row : matrix)
+    {
+        for (auto element : row)
+        {
+            cout << element << " ";
+        }
+        cout << endl;
+    }
+    solveDNF(true);
+    return 0;
+}
