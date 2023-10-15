@@ -32,12 +32,13 @@ void read_pla_file(char* file_name) {
         if (line[0] == '#' || line[0] == '\n') {
             continue;
         }
+
         // Проврека входа
-        if (line[0] == '.') {
+        if (line[0] == '.') { // количество переменный
             if (line[1] == 'i') {
                 sscanf_s(line, ".i %d", &num_vars);
             }
-            else if (line[1] == 'p') {
+            else if (line[1] == 'p') { // количество конъюнкций
                 sscanf_s(line, ".p %d", &num_conjunctions);
                 matrix.resize(num_conjunctions);
             }
@@ -51,3 +52,29 @@ void read_pla_file(char* file_name) {
             strncpy_s(matrix[current_line - 3].data(), num_vars + 1, line, _TRUNCATE);
         }
     }
+
+    // Выводим количество переменных и конъюнкий
+    printf("Количество переменных: %d\n", num_vars);
+    printf("Количество конъюнкций: %d\n", num_conjunctions);
+
+    // Ввыодим сами конъюнкции
+    for (int i = 0; i < num_conjunctions; i++) {
+        printf("Конъюнкция %d: %s", i + 1, matrix[i].data());
+        cout << endl;
+    }
+
+    fclose(file);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
