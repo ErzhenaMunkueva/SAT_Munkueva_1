@@ -71,10 +71,142 @@ void read_pla_file(char* file_name) {
 
 
 
+vector<vector<char>> lastmatrix = matrix; // Копируем матрицу
+void solveDNF(bool start)
+{
+    // Правило 1: проверяем, есть ли только один '0' или '1' в строке, и удаляем строки 
+    for (int i = 1; i < matrix.size(); i++)
+    {
+        int ones = 0, zeroes = 0, empty = 0;
+        int index1 = -1, index0 = -1;
+        int sizet = matrix[i].size();
+        for (int j = 0; j < matrix[i].size(); j++)
+        {
+            if (matrix[i][j] == '1')
+            {
+                ones++;
+                index1 = j;
+            }
+            else if (matrix[i][j] == '0')
+            {
+                zeroes++;
+                index0 = j;
+            }
+            else
+            {
+                empty++;
+            }
+        }
+        if (ones == 1 && matrix[i].size() == empty + 1) // есть единственный '1' в этой строке, и остальные символы -
+        {
+            int root_index = index1;
+            root[(int)matrix[0][root_index]] = '0';
+
+
+            i--;
+            if (matrix[0].size() > 0)
+            {
+                for (int v = 1; v < matrix.size(); v++)
+                {
+                    if (matrix[v][root_index] == '1')
+                    {
+                        matrix.erase(matrix.begin() + v);
+                        v--;
+                    }
+                }
+            }
+            else
+            {
+                break;
+            }
+            for (int k = 0; k < matrix.size(); k++)
+            {
+                matrix[k].erase(matrix[k].begin() + root_index);
+            }
+            continue;
+        }
+        else if (zeroes == 1 && matrix[i].size() == empty + 1) // есть единственный '0' в этой строке, и остальные символы -
+        {
+            int root_index = index0;
+            root[(int)matrix[0][root_index]] = '1';
+
+            i--;
+            if (matrix[0].size() > 0)
+            {
+                for (int v = 1; v < matrix.size(); v++)
+                {
+                    if (matrix[v][root_index] == '0')
+                    {
+                        matrix.erase(matrix.begin() + v);
+                        v--;
+                    }
+                }
+            }
+            else
+            {
+                break;
+            }
+            for (int k = 0; k < matrix.size(); k++)
+            {
+                matrix[k].erase(matrix[k].begin() + root_index);
+            }
+            continue;
+        }
+        if (matrix[0].size() == 0) // если нет больше столбцов, выходим из правила
+        {
+            break;
+        }
+    }
+
+    // Правило 2: проверяем, все ли значения в строке равны «-»
+    for (int i = 1; i < matrix.size(); i++)
+    {
+        if (matrix[0].size() > 0)
+        {
+            bool allMinus = true; //флаг для проверки, содержат ли все символы в строке '-'.
+
+            for (int j = 0; j < matrix[i].size(); j++)
+            {
+                if (matrix[i][j] != '-')
+                {
+                    allMinus = false;
+                    break;
+                }
+            }
+            if (allMinus)
+            {
+                cout << "Корня не существует" << endl;
+                return;
+            }
+        }
+    }
+    for (int j = 0; j < matrix[0].size(); j++)
+    {
+        bool allZeroes = true;
+        for (int i = 1; i < matrix.size(); i++)
+        {
+            if (matrix[i][j] != '-')
+            {
+                allZeroes = false;
+                break;
+            }
+        }
+        if (allZeroes)
+        {
+            for (int i = 0; i < matrix.size(); i++)
+            {
+                matrix[i].erase(matrix[i].begin() + j); // удаляет столбцы, в которых все значения являются '-'
+            }
+            j--;
+        }
+    }
 
 
 
 
 
-
-
+int main()
+{
+    char adress[] = "dnfRnd_test.pla";
+    read_pla_file(adress);
+    int rowLength = matrix[0].size();
