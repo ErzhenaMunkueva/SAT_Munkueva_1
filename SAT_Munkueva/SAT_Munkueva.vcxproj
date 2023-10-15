@@ -127,7 +127,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="bvv.cpp" />
     <ClCompile Include="SAT_Munkueva.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
