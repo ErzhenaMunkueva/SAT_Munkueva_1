@@ -358,7 +358,7 @@ void solveDNF(bool start)
 
 int main()
 {
-    char adress[] = "dnfRnd_test.pla";
+    char adress[] = "dnfRnd_test.pla"; 
     read_pla_file(adress);
     int rowLength = matrix[0].size(); //длина строки
     for (int i = 0; i < rowLength; i++)
